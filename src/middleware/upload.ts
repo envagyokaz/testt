@@ -41,6 +41,21 @@ const uploadFiles =  multer ({
     limits:{fileSize: config.maxSize}
 }).array("files",10)
 
+// Profile picture handler - accepts "profilePic" form field, images only
+const profilePicHandler = multer({
+    storage: storage,
+    limits: { fileSize: config.maxSize },
+    fileFilter: (_req, uploadedFile, callback) => {
+        const allowedTypes = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/webp"]
+        if (allowedTypes.includes(uploadedFile.mimetype)) {
+            callback(null, true)
+        } else {
+            callback(new Error('Only image files allowed'))
+        }
+    }
+}).single("profilePic")
+
 export const uploadMiddleware = util.promisify(uploadFile)
 export const uploadAvatarMiddleware = util.promisify(uploadAvatar)
 export const uploadMiddlewareMultiple = util.promisify(uploadFiles)
+export const uploadProfilePicMiddleware = util.promisify(profilePicHandler)

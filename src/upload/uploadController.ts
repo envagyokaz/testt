@@ -77,14 +77,22 @@ export const uploadFile = async (req: any, res: any) => {
 
         const file = new File(req.file as IMulterFile, req.user.userId)
         await file.saveToDatabase()
+        
+        const fileAccessUrl = `${config.serverBaseUrl}/file/${file.fileId}`
+        
         try {
-            const fileUrl = `http://localhost:3000/file/${file.fileId}`
-            broadcast({ type: 'file', url: fileUrl, fileName: file.fileName, userId: req.user.userId })
+            broadcast({ type: 'file', url: fileAccessUrl, fileName: file.fileName, userId: req.user.userId })
         } catch (e) {
             console.error('Broadcast error:', e)
         }
 
-        res.status(200).send({ message: `A fájl feltöltése sikerült! ${req.file.originalname}` })
+        res.status(200).send({ 
+            message: `A fájl feltöltése sikerült! ${req.file.originalname}`,
+            fileUrl: fileAccessUrl,
+            url: fileAccessUrl,
+            fileId: file.fileId,
+            fileName: file.fileName
+        })
     }
     catch (err) {
         res.status(500).send({
