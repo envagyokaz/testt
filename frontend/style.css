@@ -1,0 +1,230 @@
+/* ============================
+   CSS Variables (Theme Colors)
+   ============================ */
+:root {
+    --bg: #0b1220;
+    --panel: #0f1724;
+    --muted: #94a3b8;
+    --mine-bg: #06b6d4;
+    --mine-text: #ffffff;
+    --other-bg: #0f1724;
+    --accent: #2563eb;
+    --text: #e6eef6;
+    --input-bg: #071021;
+}
+
+/* ============================
+   Base / Reset Styles
+   ============================ */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ============================
+   Login Box
+   ============================ */
+.login-box {
+    max-width: 420px;
+    margin: 8vh auto;
+    background: var(--panel);
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 8px 26px rgba(2, 6, 23, 0.7);
+}
+
+.login-box h1 {
+    margin: 0 0 12px 0;
+    font-size: 1.6rem;
+}
+
+.login-box table {
+    width: 100%;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #22303a;
+    background: var(--input-bg);
+    color: var(--text);
+    font-size: 15px;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ============================
+   Chat Layout
+   ============================ */
+.chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: 96px;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 160px);
+    padding: 8px;
+}
+
+/* ============================
+   Messages
+   ============================ */
+.messages {
+    list-style: none;
+    margin: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: auto;
+    flex: 1;
+}
+
+.message {
+    max-width: 75%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.message .meta {
+    font-size: 12px;
+    color: var(--muted); 
+    margin-bottom: 8px;
+}
+
+.message > div:last-child {
+    font-size: 15px;
+    color: inherit;
+}
+
+/* Other people's messages: left aligned */
+.other {
+    align-self: flex-start;
+    background: linear-gradient(180deg, var(--other-bg), #828997);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom-left-radius: 6px;
+}
+
+/* My messages: right aligned */
+.mine {
+    align-self: flex-end;
+    background: var(--mine-bg);
+    color: var(--mine-text);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom-right-radius: 6px;
+}
+
+.mine .meta {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+}
+
+/* ============================
+   Typing Bar (Fixed to Bottom)
+   ============================ */
+.typing-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(2, 6, 23, 0.45), rgba(2, 6, 23, 0.85));
+    backdrop-filter: blur(6px);
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.typing-inner {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 10px;
+}
+
+#uzi {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #26323a;
+    background: var(--input-bg);
+    color: var(--text);
+    font-size: 15px;
+}
+
+.send-btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ============================
+   Scrollbar (Messages)
+   ============================ */
+.messages::-webkit-scrollbar {
+    width: 10px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+}
+
+.messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ============================
+   Responsive Design
+   ============================ */
+@media (max-width: 520px) {
+    .message {
+        max-width: 88%;
+        font-size: 15px;
+    }
+
+    .chat-container {
+        height: calc(100vh - 180px);
+    }
+
+    .login-box {
+        margin: 6vh 12px;
+    }
+}
+

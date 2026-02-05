@@ -1,0 +1,214 @@
+/* Chat layout */
+.chat-root {
+  display: flex;
+  gap: 20px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.left {
+  width: 240px;
+}
+
+.main {
+  flex: 1;
+}
+
+/* Online users */
+.online-users {
+  margin-top: 8px;
+}
+.public-btn {
+  display: block;
+  margin-bottom: 8px;
+  width: 100%;
+  text-align: left;
+}
+
+.ws-status {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #1ecae1;
+}
+
+.ws-status .refresh-btn,
+.ws-status .ping-btn,
+.ws-status .simulate-btn {
+  margin-left: 8px;
+}
+
+.user-token {
+  margin-top: 6px;
+}
+
+.token-indicator {
+  color: #111;
+}
+
+.no-users {
+  color: #888;
+}
+
+.user-row {
+  margin-bottom: 6px;
+}
+
+.user-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.user-btn.selected {
+  background: #171765;
+  border-color: #bfeeff;
+}
+
+/* Groups */
+.groups {
+  margin-top: 8px;
+}
+
+.create-btn {
+  margin-left: 8px;
+}
+
+.groups-list .group-row {
+  margin-bottom: 6px;
+}
+
+.group-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.group-btn.selected {
+  background: #171765;
+}
+
+.logout-wrap {
+  margin-top: 16px;
+}
+
+.logout-btn {
+  background: #ff4d4f;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Messages */
+.messages {
+  border: 1px solid #ddd;
+  padding: 12px;
+  height: 400px;
+  overflow-y: auto;
+}
+
+.message-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+.message-row.own {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  background: #f1f1f1;
+  color: #000;
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 70%;
+  word-break: break-word;
+  text-align: left;
+}
+
+.message-bubble.own {
+  background: #daf5ff;
+  text-align: right;
+}
+
+.message-bubble .from {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.message-bubble .time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 6px;
+}
+
+/* Input row */
+.input-row {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.file-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background 0.2s;
+  min-width: 44px;
+  height: 38px;
+}
+
+.file-upload-btn:hover {
+  background: #45a049;
+}
+
+.message-input {
+  flex: 1;
+  padding: 8px;
+}
+
+.send-btn {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.send-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Debug */
+.debug {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #444;
+}
+
+.debug-title { font-weight: 600; }
+.debug-label { margin-bottom: 6px; }
+.debug-pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 120px;
+  overflow: auto;
+  background: #fafafa;
+  padding: 8px;
+}
+
+.debug-users { margin-top: 6px; }

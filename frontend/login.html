@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log in to me!</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="login-box">
+      <h1>Login</h1>
+      <table>
+      <tr>
+        <td>Username:</td>
+        <td><input type="text" name="username" id="username" /></td>
+      </tr>
+      <tr>
+        <td>Password:</td>
+        <td><input type="password" name="password" id="password" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><button type="submit" onclick="Login()">Log In</button></td>
+      </tr>
+    </table>
+    </div>
+  </body>
+
+  <script>
+    document.getElementById("password").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          Login();
+        }
+      });
+
+
+    function Login() {
+      const _username = document.getElementById("username").value;
+      const _password = document.getElementById("password").value;
+//titok
+      console.log("Username:", _username);
+      console.log("Password:", _password);
+
+      fetch("http://10.5.0.50:3000/user/signIn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: _username,
+          password: _password,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          setTimeout(() => {
+            if(data["token"]){
+              // Store the token and username in localStorage
+              localStorage.setItem("token", data["token"]);
+              localStorage.setItem("username", _username);
+              window.location.href = "index.html";
+            } else {
+              console.log("Login failed. Please check your credentials.");
+            }
+        }, 1000);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  </script>
+</html>
