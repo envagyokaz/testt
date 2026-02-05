@@ -95,7 +95,7 @@ export const getProfilePic = async (req: any, res: any) => {
 
         const avatar = results[0].avatar
         if (avatar) {
-            const profilePicUrl = `http://10.5.0.50:3000/file/${avatar}`
+            const profilePicUrl = `${config.serverBaseUrl}/file/${avatar}`
             res.status(200).send({ profilePicUrl })
         } else {
             res.status(200).send({ profilePicUrl: null })
@@ -131,7 +131,7 @@ export const uploadProfilePic = async (req: any, res: any) => {
             await oldFile.deleteFromDatabaseAndDir()
         }
         
-        const profilePicUrl = `http://10.5.0.50:3000/file/${req.file.filename}`
+        const profilePicUrl = `${config.serverBaseUrl}/file/${req.file.filename}`
         res.status(200).send({ 
             message: `Profile picture uploaded successfully!`,
             profilePicUrl 

@@ -70,7 +70,7 @@ export const saveMessage = async (req: any, res: any) => {
         if (savedRow && savedRow.fileId) {
             saved = {
                 ...savedRow,
-                fileUrl: `http://10.5.0.50:3000/file/${savedRow.fileId}`,
+                fileUrl: `${config.serverBaseUrl}/file/${savedRow.fileId}`,
                 fileName: savedRow.fileName || fileName,
                 fileType: savedRow.fileType || fileType
             }
@@ -137,7 +137,7 @@ export const getMessages = async (req: any, res: any) => {
             if (row.fileId) {
                 return {
                     ...row,
-                    fileUrl: `http://10.5.0.50:3000/file/${row.fileId}`
+                    fileUrl: `${config.serverBaseUrl}/file/${row.fileId}`
                 }
             }
             return row

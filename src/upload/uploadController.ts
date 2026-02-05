@@ -78,8 +78,7 @@ export const uploadFile = async (req: any, res: any) => {
         const file = new File(req.file as IMulterFile, req.user.userId)
         await file.saveToDatabase()
         
-        const baseUrl = `http://10.5.0.50:3000`
-        const fileAccessUrl = `${baseUrl}/file/${file.fileId}`
+        const fileAccessUrl = `${config.serverBaseUrl}/file/${file.fileId}`
         
         try {
             broadcast({ type: 'file', url: fileAccessUrl, fileName: file.fileName, userId: req.user.userId })
