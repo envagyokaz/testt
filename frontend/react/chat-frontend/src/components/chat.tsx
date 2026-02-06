@@ -45,10 +45,50 @@ export function Chat() {
   const [groupNameInput, setGroupNameInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [profilePic, setProfilePic] = useState<string | null>(null);
+  // cache of profile picture URLs (username -> url|null)
+  const [avatarCache, setAvatarCache] = useState<Record<string, string | null>>({});
   const [uploadingFile, setUploadingFile] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectRef = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // fetch profile pic for a given username and cache the result (or null on failure)
+  async function fetchAvatar(userToFetch: string) {
+    if (!userToFetch) return;
+    // don't refetch if we already have an entry (including explicit null)
+    if (Object.prototype.hasOwnProperty.call(avatarCache, userToFetch)) return;
+    if (!token) {
+      setAvatarCache((p) => ({...p, [userToFetch]: null}));
+      return;
+    }
+    try {
+      const resp = await fetch(`http://10.5.0.50:3000/user/profile-pic/${encodeURIComponent(userToFetch)}`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const url = data?.profilePicUrl || data?.url || null;
+        setAvatarCache((p) => ({...p, [userToFetch]: url}));
+      } else {
+        setAvatarCache((p) => ({...p, [userToFetch]: null}));
+      }
+    } catch (err) {
+      console.error('Error fetching avatar for', userToFetch, err);
+      setAvatarCache((p) => ({...p, [userToFetch]: null}));
+    }
+  }
+
+  // ensure avatars for visible messages are fetched and cached
+  useEffect(() => {
+    const users = Array.from(new Set(messages.map((m) => m.from)));
+    users.forEach((u) => {
+      if (u && !Object.prototype.hasOwnProperty.call(avatarCache, u)) {
+        fetchAvatar(u);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
 
   // If there's no token or username, go back to login page
   useEffect(() => {
@@ -211,7 +251,7 @@ export function Chat() {
       if (!token || !username) return;
       setWsStatus('connecting');
       try {
-        const ws = new WebSocket("ws://10.5.0.50:8081");
+        const ws = new WebSocket("ws://10.5.0.50:6969");
         wsRef.current = ws;
 
         // Helper function to send raw WebSocket messages
@@ -528,7 +568,7 @@ export function Chat() {
     if (!messageInput.trim() && !selectedFile) return;
     if (!username) return;
 
-    let content = messageInput.trim();
+    const content = messageInput.trim();
     let fileUrl: string | undefined;
     let fileName: string | undefined;
     let fileType: string | undefined;
@@ -542,9 +582,9 @@ export function Chat() {
         fileType = uploadResult.fileType;
 
         // If no message text was provided, use the file name as the message content
-        if (!content) {
-          content = fileName;
-        }
+         //if (!content) {
+        //   content = fileName;
+         //}
       } else {
         console.error("File upload failed");
         return;
@@ -725,11 +765,8 @@ export function Chat() {
   }
   // Filter messages to display for current chat
   // Deduplicate messages when computing visibleMessages: create a signature for messages and prefer non-optimistic (server-confirmed) messages over optimistic ones, preserving order. This prevents the sender from seeing duplicate messages.
-  function messageSignature(m: Message) {
-    if (m.id) return `id:${m.id}`;
-    const content = (m.content || "").trim();
-    return `sig:${m.from}|${m.chatType}|${m.to ?? ""}|${m.group ?? ""}|${content}`;
-  }
+  // Only deduplicate by server-assigned id. Messages without an id (optimistic or otherwise)
+  // are shown as separate messages so sending the same content twice creates two messages.
 
   const visibleMessages = (() => {
     // First, filter messages for the selected chat
@@ -746,32 +783,30 @@ export function Chat() {
       return false;
     });
 
-    // Deduplicate: walk from end to start, keep first occurrence of each signature,
-    // but prefer non-optimistic messages by replacing optimistic entries when found earlier.
-    const map = new Map<string, Message>();
-    for (let i = filtered.length - 1; i >= 0; i--) {
-      const m = filtered[i];
-      const sig = messageSignature(m);
-      const existing = map.get(sig);
-      if (!existing) {
-        map.set(sig, m);
-      } else if (existing.isOptimistic && !m.isOptimistic) {
-        // prefer confirmed message over optimistic one
-        map.set(sig, m);
+    // Build visible list while avoiding duplicates only when a server id is present.
+    const seenIds = new Set<string>();
+    const out: Message[] = [];
+    for (const m of filtered) {
+      if (m.id) {
+        if (seenIds.has(m.id)) continue; // skip duplicate with same server id
+        seenIds.add(m.id);
+        out.push(m);
+      } else {
+        // no server id -> always show (preserve user intent to send the same message twice)
+        out.push(m);
       }
     }
 
-    // Reconstruct in original chronological order
-    return Array.from(map.values()).reverse();
+    return out;
   })();
 
   return (
     <div className="chat-root">
       <div className="left">
         <div className="profile-section">
-          <div className="profile-pic-container">
+          <div className="profile-pic-container"  >
             {profilePic ? (
-              <img src={profilePic} alt="Profile" className="profile-pic" />
+              <img src={profilePic} style={{width:'120px', border:'1px solid white', borderRadius:'10px'}} alt="Profile" className="profile-pic" />
             ) : (
               <div className="profile-pic-placeholder">
                 {username?.charAt(0).toUpperCase()}
@@ -855,8 +890,19 @@ export function Chat() {
           {visibleMessages.length === 0 && <div style={{color: "#888"}}>No messages yet</div>}
           {visibleMessages.map((m, idx) => {
             const isOwn = m.from === username;
+            const avatarUrl = avatarCache[m.from] ?? null;
+            const initial = (m.from && String(m.from).charAt(0).toUpperCase()) || '?';
             return (
               <div key={m.id || idx} className={`message-row ${isOwn ? 'own' : ''}`}>
+                {/* avatar on left for others */}
+                {!isOwn && (
+                  avatarUrl ? (
+                    <img src={avatarUrl} alt={`${m.from} avatar`} className="message-avatar" />
+                  ) : (
+                    <div className="message-avatar message-avatar-fallback">{initial}</div>
+                  )
+                )}
+
                 <div className={`message-bubble ${isOwn ? 'own' : ''}`}>
                   <div className="from">{m.from}</div>
                   {m.content && <div className="content">{m.content}</div>}
@@ -877,6 +923,15 @@ export function Chat() {
                   )}
                   <div className="time">{m.displayTime}</div>
                 </div>
+
+                {/* avatar on right for own messages */}
+                {isOwn && (
+                  avatarUrl ? (
+                    <img src={avatarUrl} alt={`${m.from} avatar`} className="message-avatar" />
+                  ) : (
+                    <div className="message-avatar message-avatar-fallback">{initial}</div>
+                  )
+                )}
               </div>
             );
           })}

@@ -149,6 +149,26 @@
   margin-top: 6px;
 }
 
+/* small avatar next to each message sender */
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin: 0 8px;
+  object-fit: cover;
+  flex: 0 0 32px;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* ensure avatar is placed nicely when message owned by current user */
+.message-row.own .message-avatar {
+  margin: 0 0 0 8px; /* space to left of avatar when on right */
+}
+
+.message-row:not(.own) .message-avatar {
+  margin: 0 8px 0 0; /* space to right of avatar when on left */
+}
+
 /* Input row */
 .input-row {
   margin-top: 12px;

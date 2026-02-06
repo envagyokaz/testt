@@ -4,7 +4,7 @@ import verifyToken from "../middleware/auth"
 
 const router: Router = Router()
 router.get('/files', verifyToken,getFileList)
-router.get('/file/:id', verifyToken,downloadFile)
+router.get('/file/:id', downloadFile)
 router.post('/file/upload',verifyToken,uploadFile)
 router.post('/files/upload',verifyToken,uploadFileMultiple)
 
