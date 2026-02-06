@@ -26,6 +26,12 @@ wss.on("connection", (ws) => {
       clients.delete(ws);
    })
 
-})
-
-export default wss
+ const broadcast =(message:any)=>{
+   clients.forEach((client:any)=>{
+      if(client.readyState === client.OPEN){
+         client.send(message);
+      }
+   });
+   };
+   
+}); 
